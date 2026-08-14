@@ -1,0 +1,26 @@
+{
+  "id": "chatcmpl-BxYz1a2b3c",
+  "object": "chat.completion",
+  "created": 1771059660,
+  "model": "gpt-4o-mini-2024-07-18",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "The sky looks blue because shorter wavelengths scatter more in the atmosphere.",
+        "refusal": null
+      },
+      "logprobs": null,
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 24,
+    "completion_tokens": 17,
+    "total_tokens": 41,
+    "prompt_tokens_details": { "cached_tokens": 8, "audio_tokens": 0 },
+    "completion_tokens_details": { "reasoning_tokens": 0, "audio_tokens": 0 }
+  },
+  "system_fingerprint": "fp_0aa8d3e20b"
+}

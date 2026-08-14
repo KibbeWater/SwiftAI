@@ -1,0 +1,34 @@
+{
+  "id": "resp_68b1c2d3e4f5",
+  "object": "response",
+  "created_at": 1771060200,
+  "status": "completed",
+  "model": "gpt-5-2025-08-07",
+  "output": [
+    {
+      "id": "rs_68b1c2d3aaa",
+      "type": "reasoning",
+      "summary": [{ "type": "summary_text", "text": "Shorter wavelengths scatter more." }],
+      "encrypted_content": "gAAAAABo_encrypted"
+    },
+    {
+      "id": "msg_68b1c2d3bbb",
+      "type": "message",
+      "status": "completed",
+      "role": "assistant",
+      "content": [
+        { "type": "output_text", "text": "Blue light scatters more in the atmosphere.", "annotations": [] }
+      ]
+    }
+  ],
+  "usage": {
+    "input_tokens": 14,
+    "input_tokens_details": { "cached_tokens": 6 },
+    "output_tokens": 40,
+    "output_tokens_details": { "reasoning_tokens": 32 },
+    "total_tokens": 54
+  },
+  "incomplete_details": null,
+  "parallel_tool_calls": true,
+  "store": true
+}

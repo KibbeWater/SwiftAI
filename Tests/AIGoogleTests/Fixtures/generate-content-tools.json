@@ -1,0 +1,16 @@
+{
+  "candidates": [
+    {
+      "content": {
+        "parts": [
+          { "functionCall": { "name": "weather", "args": { "city": "Malmö" } } }
+        ],
+        "role": "model"
+      },
+      "finishReason": "STOP",
+      "index": 0
+    }
+  ],
+  "usageMetadata": { "promptTokenCount": 61, "candidatesTokenCount": 12, "totalTokenCount": 73 },
+  "modelVersion": "gemini-2.5-flash"
+}

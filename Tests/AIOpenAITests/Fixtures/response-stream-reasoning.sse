@@ -1,0 +1,24 @@
+event: response.created
+data: {"type":"response.created","sequence_number":0,"response":{"id":"resp_reason","object":"response","created_at":1771060700,"status":"in_progress","model":"gpt-5-2025-08-07","output":[]}}
+
+event: response.output_item.added
+data: {"type":"response.output_item.added","sequence_number":1,"output_index":0,"item":{"id":"rs_1","type":"reasoning","summary":[]}}
+
+event: response.reasoning_summary_text.delta
+data: {"type":"response.reasoning_summary_text.delta","sequence_number":2,"item_id":"rs_1","output_index":0,"summary_index":0,"delta":"Shorter wavelengths "}
+
+event: response.reasoning_summary_text.delta
+data: {"type":"response.reasoning_summary_text.delta","sequence_number":3,"item_id":"rs_1","output_index":0,"summary_index":0,"delta":"scatter more."}
+
+event: response.reasoning_summary_text.done
+data: {"type":"response.reasoning_summary_text.done","sequence_number":4,"item_id":"rs_1","output_index":0,"summary_index":0,"text":"Shorter wavelengths scatter more."}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":5,"item_id":"msg_r1","output_index":1,"content_index":0,"delta":"Rayleigh scattering."}
+
+event: response.output_text.done
+data: {"type":"response.output_text.done","sequence_number":6,"item_id":"msg_r1","output_index":1,"content_index":0,"text":"Rayleigh scattering."}
+
+event: response.completed
+data: {"type":"response.completed","sequence_number":7,"response":{"id":"resp_reason","object":"response","created_at":1771060700,"status":"completed","model":"gpt-5-2025-08-07","output":[],"usage":{"input_tokens":14,"output_tokens":40,"output_tokens_details":{"reasoning_tokens":32},"total_tokens":54}}}
+

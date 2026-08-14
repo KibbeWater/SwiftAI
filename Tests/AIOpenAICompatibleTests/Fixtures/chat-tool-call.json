@@ -1,0 +1,26 @@
+{
+  "id": "chatcmpl-CtoolAbc",
+  "object": "chat.completion",
+  "created": 1771059700,
+  "model": "gpt-4o-mini-2024-07-18",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_9xTqPl2",
+            "type": "function",
+            "function": { "name": "weather", "arguments": "{\"city\":\"Malmö\"}" }
+          }
+        ],
+        "refusal": null
+      },
+      "logprobs": null,
+      "finish_reason": "tool_calls"
+    }
+  ],
+  "usage": { "prompt_tokens": 61, "completion_tokens": 18, "total_tokens": 79 }
+}

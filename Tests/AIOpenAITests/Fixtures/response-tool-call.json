@@ -1,0 +1,19 @@
+{
+  "id": "resp_toolcall1",
+  "object": "response",
+  "created_at": 1771060300,
+  "status": "completed",
+  "model": "gpt-5-2025-08-07",
+  "output": [
+    {
+      "id": "fc_68b1d4e5",
+      "type": "function_call",
+      "status": "completed",
+      "call_id": "call_KpQ2mR7x",
+      "name": "weather",
+      "arguments": "{\"city\":\"Malmö\"}"
+    }
+  ],
+  "usage": { "input_tokens": 61, "output_tokens": 18, "total_tokens": 79 },
+  "incomplete_details": null
+}

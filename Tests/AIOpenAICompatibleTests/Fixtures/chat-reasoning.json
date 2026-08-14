@@ -1,0 +1,23 @@
+{
+  "id": "chatcmpl-Reason1",
+  "object": "chat.completion",
+  "created": 1771059800,
+  "model": "deepseek-reasoner",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "reasoning_content": "Rayleigh scattering favours shorter wavelengths.",
+        "content": "Because blue light scatters more."
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 12,
+    "completion_tokens": 30,
+    "total_tokens": 42,
+    "completion_tokens_details": { "reasoning_tokens": 21 }
+  }
+}

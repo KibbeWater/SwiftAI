@@ -1,0 +1,21 @@
+{
+  "candidates": [
+    {
+      "content": {
+        "parts": [{ "text": "Blue light scatters more in the atmosphere." }],
+        "role": "model"
+      },
+      "finishReason": "STOP",
+      "index": 0
+    }
+  ],
+  "usageMetadata": {
+    "promptTokenCount": 8,
+    "candidatesTokenCount": 9,
+    "totalTokenCount": 41,
+    "thoughtsTokenCount": 24,
+    "cachedContentTokenCount": 4
+  },
+  "modelVersion": "gemini-2.5-flash",
+  "responseId": "rIdY6Ku3Ic-K"
+}

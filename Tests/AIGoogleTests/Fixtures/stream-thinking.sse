@@ -1,0 +1,6 @@
+data: {"candidates":[{"content":{"parts":[{"text":"Shorter wavelengths ","thought":true}],"role":"model"},"index":0}],"modelVersion":"gemini-2.5-flash"}
+
+data: {"candidates":[{"content":{"parts":[{"text":"scatter more.","thought":true}],"role":"model"},"index":0}],"modelVersion":"gemini-2.5-flash"}
+
+data: {"candidates":[{"content":{"parts":[{"text":"Rayleigh scattering."}],"role":"model"},"index":0,"finishReason":"STOP"}],"usageMetadata":{"promptTokenCount":8,"candidatesTokenCount":6,"thoughtsTokenCount":24,"totalTokenCount":38},"modelVersion":"gemini-2.5-flash"}
+

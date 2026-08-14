@@ -1,0 +1,17 @@
+{
+  "id": "msg_01XyZaBcDeFgHiJkLmNoPq",
+  "type": "message",
+  "role": "assistant",
+  "model": "claude-sonnet-4-5-20250929",
+  "content": [
+    { "type": "text", "text": "Blue light scatters more in the atmosphere." }
+  ],
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "usage": {
+    "input_tokens": 18,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 120,
+    "output_tokens": 9
+  }
+}

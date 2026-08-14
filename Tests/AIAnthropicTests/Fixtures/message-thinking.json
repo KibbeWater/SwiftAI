@@ -1,0 +1,16 @@
+{
+  "id": "msg_01Think",
+  "type": "message",
+  "role": "assistant",
+  "model": "claude-sonnet-4-5-20250929",
+  "content": [
+    {
+      "type": "thinking",
+      "thinking": "Shorter wavelengths scatter more strongly.",
+      "signature": "ErUBCkYIBRgCIkD3xK2sig=="
+    },
+    { "type": "text", "text": "Because of Rayleigh scattering." }
+  ],
+  "stop_reason": "end_turn",
+  "usage": { "input_tokens": 30, "output_tokens": 45 }
+}

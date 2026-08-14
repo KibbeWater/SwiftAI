@@ -1,0 +1,21 @@
+event: response.created
+data: {"type":"response.created","sequence_number":0,"response":{"id":"resp_tool_stream","object":"response","created_at":1771060600,"status":"in_progress","model":"gpt-5-2025-08-07","output":[]}}
+
+event: response.output_item.added
+data: {"type":"response.output_item.added","sequence_number":1,"output_index":0,"item":{"id":"fc_1","type":"function_call","status":"in_progress","call_id":"call_KpQ2mR7x","name":"weather","arguments":""}}
+
+event: response.function_call_arguments.delta
+data: {"type":"response.function_call_arguments.delta","sequence_number":2,"item_id":"fc_1","output_index":0,"delta":"{\"ci"}
+
+event: response.function_call_arguments.delta
+data: {"type":"response.function_call_arguments.delta","sequence_number":3,"item_id":"fc_1","output_index":0,"delta":"ty\":\"Malmö\"}"}
+
+event: response.function_call_arguments.done
+data: {"type":"response.function_call_arguments.done","sequence_number":4,"item_id":"fc_1","output_index":0,"arguments":"{\"city\":\"Malmö\"}"}
+
+event: response.output_item.done
+data: {"type":"response.output_item.done","sequence_number":5,"output_index":0,"item":{"id":"fc_1","type":"function_call","status":"completed","call_id":"call_KpQ2mR7x","name":"weather","arguments":"{\"city\":\"Malmö\"}"}}
+
+event: response.completed
+data: {"type":"response.completed","sequence_number":6,"response":{"id":"resp_tool_stream","object":"response","created_at":1771060600,"status":"completed","model":"gpt-5-2025-08-07","output":[{"id":"fc_1","type":"function_call","status":"completed","call_id":"call_KpQ2mR7x","name":"weather","arguments":"{\"city\":\"Malmö\"}"}],"usage":{"input_tokens":61,"output_tokens":18,"total_tokens":79}}}
+

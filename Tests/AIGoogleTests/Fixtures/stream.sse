@@ -1,0 +1,6 @@
+data: {"candidates":[{"content":{"parts":[{"text":"Blue "}],"role":"model"},"index":0}],"modelVersion":"gemini-2.5-flash","responseId":"rIdY6Ku3Ic-K"}
+
+data: {"candidates":[{"content":{"parts":[{"text":"light "}],"role":"model"},"index":0}],"modelVersion":"gemini-2.5-flash"}
+
+data: {"candidates":[{"content":{"parts":[{"text":"scatters."}],"role":"model"},"index":0,"finishReason":"STOP"}],"usageMetadata":{"promptTokenCount":8,"candidatesTokenCount":9,"totalTokenCount":17},"modelVersion":"gemini-2.5-flash"}
+
