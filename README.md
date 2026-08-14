@@ -44,8 +44,14 @@ retries, middleware — works identically across all of them.
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/your-org/SwiftAI.git", from: "0.1.0")
+    .package(url: "https://github.com/KibbeWater/SwiftAI.git", branch: "main")
 ]
+```
+
+No version is tagged yet, so track the branch for now. Once a release exists, pin it instead:
+
+```swift
+.package(url: "https://github.com/KibbeWater/SwiftAI.git", from: "0.1.0")
 ```
 
 Then depend on the core plus whichever providers you use:
