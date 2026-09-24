@@ -243,6 +243,48 @@ public struct GoogleProvider: AIProvider, Sendable {
     public func embeddingModel(_ modelID: String) -> any EmbeddingModel {
         GoogleEmbeddingModel(provider: name, modelID: modelID, client: client)
     }
+
+    /// Returns an evaluation model that answers through structured output.
+    ///
+    /// Thinking is turned down as far as the model allows, since it rarely helps this kind of
+    /// judgment and costs latency. Override with `["google": ["generationConfig": ["thinkingConfig": …]]]`.
+    ///
+    /// - Important: Experimental. Evaluation may change in a minor release.
+    public func evaluationModel(_ modelID: String) -> any EvaluationModel {
+        LanguageModelEvaluationModel(
+            model: languageModel(modelID),
+            provider: name,
+            defaultProviderOptions: Self.minimalThinking(for: modelID).map { config in
+                [name: ["generationConfig": ["thinkingConfig": config]]]
+            }
+        )
+    }
+
+    /// The least thinking a model accepts, or `nil` when it does not think or the right setting is
+    /// unknown.
+    ///
+    /// Gemini 3 takes a level, and its newer non-lite Flash models no longer accept `minimal`.
+    /// Gemini 2.5 takes a budget: zero turns thinking off, except on Pro, whose floor is 128.
+    static func minimalThinking(for modelID: String) -> JSONValue? {
+        let id = modelID.hasPrefix("models/") ? String(modelID.dropFirst("models/".count)) : modelID
+        if id == "gemini-flash-latest" { return ["thinkingLevel": "low"] }
+
+        guard id.hasPrefix("gemini-") else { return nil }
+        let version = id.dropFirst("gemini-".count).prefix { $0.isNumber || $0 == "." }
+        let components = version.split(separator: ".").compactMap { Int($0) }
+        guard let major = components.first else { return nil }
+        let minor = components.count > 1 ? components[1] : 0
+
+        if major >= 3 {
+            let isFlash = id.contains("-flash") && !id.contains("-lite")
+            let needsLow = isFlash && (major > 3 || minor >= 7)
+            return ["thinkingLevel": .string(needsLow ? "low" : "minimal")]
+        }
+        if major == 2, minor == 5 {
+            return ["thinkingBudget": .int(id.contains("-pro") ? 128 : 0)]
+        }
+        return nil
+    }
 }
 
 /// A language model served by the Gemini API.

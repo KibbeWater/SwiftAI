@@ -40,6 +40,12 @@ public protocol AIProvider: Sendable {
     ///
     /// - Throws: ``NoSuchModelError`` if the provider offers no such model.
     func transcriptionModel(_ modelID: String) throws -> any TranscriptionModel
+
+    /// Returns the evaluation model with the given identifier.
+    ///
+    /// - Important: Experimental. Evaluation models may change in a minor release.
+    /// - Throws: ``NoSuchModelError`` if the provider offers no such model.
+    func evaluationModel(_ modelID: String) throws -> any EvaluationModel
 }
 
 extension AIProvider {
@@ -64,6 +70,14 @@ extension AIProvider {
             modelID: modelID,
             modelKind: .transcription,
             message: unsupportedMessage(modelID, "transcription")
+        )
+    }
+
+    public func evaluationModel(_ modelID: String) throws -> any EvaluationModel {
+        throw NoSuchModelError(
+            modelID: modelID,
+            modelKind: .evaluation,
+            message: unsupportedMessage(modelID, "evaluation")
         )
     }
 

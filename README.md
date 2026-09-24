@@ -33,6 +33,7 @@ retries, middleware — works identically across all of them.
 - [Agents](#agents)
 - [Middleware](#middleware)
 - [Embeddings](#embeddings)
+- [Evaluation](#evaluation)
 - [Images, speech, and transcription](#images-speech-and-transcription)
 - [Providers](#providers)
 - [Testing](#testing)
@@ -325,6 +326,45 @@ let similarity = try cosineSimilarity(result.embeddings[0], result.embeddings[1]
 
 Inputs larger than a provider accepts are split into batches, sent with bounded concurrency, and
 reassembled in the original order.
+
+---
+
+## Evaluation
+
+> **Experimental.** The evaluation API may change in a minor release.
+
+`evaluate` answers named questions about one piece of state: pick an option, place it on a
+rubric, or estimate how likely something is to be true.
+
+```swift
+enum Department: String, EvaluationChoice {
+    case billing, support
+}
+
+let result = try await evaluate(
+    model: openai.evaluationModel("gpt-5-mini"),
+    state: ["message": "I was charged twice. Please refund the extra charge."],
+    questions: [
+        "department": .choice("Which team should handle this?", options: Department.self),
+        "severity": .score("How severe is it?", levels: ["Cosmetic", "Workaround exists", "Blocking"]),
+        "refund": .boolean("Is the customer asking for money back?"),
+    ]
+)
+
+result.choice("department", as: Department.self)  // .billing
+result["severity"]?.score                          // 0.4, a position on the zero-based rubric
+result["refund"]?.probability                      // 0.97, P(true) — not confidence
+```
+
+A boolean answer is always P(true), so `0.02` is a confident no. Some providers also return a
+probability distribution for choices and scores. Answers are checked before they are returned:
+every question gets one answer of its own kind, distributions are complete and sum to one, and
+scores agree with their distribution. Nothing is renormalized.
+
+OpenAI, Anthropic, and Google answer through structured output with reasoning turned down. Every
+question goes in a single prompt, and no distributions come back. Native evaluation endpoints judge
+each question on its own and do return distributions. Either way, check a model's judgments
+against your own labeled examples before choosing thresholds.
 
 ---
 

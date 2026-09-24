@@ -446,3 +446,23 @@ struct OpenAIMediaTests {
         #expect(!body.contains("verbose_json"))
     }
 }
+
+@Suite("OpenAI evaluation")
+struct OpenAIEvaluationTests {
+    @Test("Turns reasoning down as far as each model family allows", arguments: [
+        ("gpt-5.1", "none"),
+        ("gpt-5.6-luna", "none"),
+        ("gpt-6-luna", "none"),
+        ("gpt-5", "minimal"),
+        ("gpt-5-mini", "minimal"),
+        ("o4-mini", "low"),
+    ])
+    func minimalEffort(modelID: String, effort: String) {
+        #expect(OpenAIProvider.minimalReasoningEffort(for: modelID) == effort)
+    }
+
+    @Test("Sends no reasoning setting to models that reject one", arguments: ["gpt-4.1", "gpt-4o-mini", "gpt-5-chat-latest"])
+    func noEffortForNonReasoningModels(modelID: String) {
+        #expect(OpenAIProvider.minimalReasoningEffort(for: modelID) == nil)
+    }
+}

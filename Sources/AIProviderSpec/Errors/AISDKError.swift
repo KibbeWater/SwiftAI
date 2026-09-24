@@ -207,6 +207,24 @@ public struct TypeValidationError: AISDKError, LocalizedError {
     }
 }
 
+/// A provider's response was well formed but its content broke the contract it must satisfy.
+///
+/// Thrown, for example, when an evaluation model omits an answer, picks an option that was not
+/// offered, or reports a distribution that does not sum to one. Values are never silently
+/// corrected, because a quietly renormalized probability is worse than a loud failure.
+public struct InvalidResponseDataError: AISDKError, LocalizedError {
+    public var name: String { "AI_InvalidResponseDataError" }
+    public var message: String
+
+    /// The offending data, when it is worth carrying.
+    public var data: JSONValue?
+
+    public init(message: String, data: JSONValue? = nil) {
+        self.message = message
+        self.data = data
+    }
+}
+
 // MARK: - Capability and configuration failures
 
 /// A provider does not implement a requested capability.
@@ -226,6 +244,31 @@ public struct UnsupportedFunctionalityError: AISDKError, LocalizedError {
     }
 }
 
+/// An evaluation model cannot answer one of the requested kinds of question.
+///
+/// Checked before any request is made. The whole call fails: answering only the supported
+/// questions would hand back a result that silently lacks some of what was asked.
+public struct UnsupportedQuestionTypeError: AISDKError, LocalizedError {
+    public var name: String { "AI_EvaluationUnsupportedQuestionTypeError" }
+    public var message: String
+
+    public var questionID: String
+    public var questionType: EvaluationQuestionType
+    public var provider: String
+    public var modelID: String
+
+    public init(questionID: String, questionType: EvaluationQuestionType, provider: String, modelID: String) {
+        self.questionID = questionID
+        self.questionType = questionType
+        self.provider = provider
+        self.modelID = modelID
+        self.message = """
+            Question '\(questionID)' has type '\(questionType.rawValue)', which the '\(provider)' \
+            provider does not support for model '\(modelID)'.
+            """
+    }
+}
+
 /// A model identifier could not be resolved.
 public struct NoSuchModelError: AISDKError, LocalizedError {
     public var name: String { "AI_NoSuchModelError" }
@@ -233,7 +276,7 @@ public struct NoSuchModelError: AISDKError, LocalizedError {
 
     /// The kind of model that was requested.
     public enum ModelKind: String, Sendable, Hashable {
-        case language, embedding, image, speech, transcription
+        case language, embedding, image, speech, transcription, evaluation
     }
 
     public var modelID: String

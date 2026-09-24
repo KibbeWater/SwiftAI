@@ -67,6 +67,11 @@ public struct ProviderRegistry: AIProvider, Sendable {
         return try provider.transcriptionModel(modelID)
     }
 
+    public func evaluationModel(_ id: String) throws -> any EvaluationModel {
+        let (provider, modelID) = try split(id, kind: .evaluation)
+        return try provider.evaluationModel(modelID)
+    }
+
     /// Splits a qualified identifier into its provider and model parts.
     ///
     /// Only the first separator divides them, so model identifiers containing the separator —
@@ -121,6 +126,7 @@ public struct CustomProvider: AIProvider, Sendable {
     private let languageModels: [String: any LanguageModel]
     private let embeddingModels: [String: any EmbeddingModel]
     private let imageModels: [String: any ImageModel]
+    private let evaluationModels: [String: any EvaluationModel]
     private let fallback: (any AIProvider)?
 
     /// Creates a provider from named models.
@@ -130,6 +136,7 @@ public struct CustomProvider: AIProvider, Sendable {
     ///   - languageModels: Language models by alias.
     ///   - embeddingModels: Embedding models by alias.
     ///   - imageModels: Image models by alias.
+    ///   - evaluationModels: Evaluation models by alias.
     ///   - fallback: Consulted for any name not listed above, so a custom provider can add aliases
     ///     to an existing one rather than replacing it.
     public init(
@@ -137,12 +144,14 @@ public struct CustomProvider: AIProvider, Sendable {
         languageModels: [String: any LanguageModel] = [:],
         embeddingModels: [String: any EmbeddingModel] = [:],
         imageModels: [String: any ImageModel] = [:],
+        evaluationModels: [String: any EvaluationModel] = [:],
         fallback: (any AIProvider)? = nil
     ) {
         self.name = name
         self.languageModels = languageModels
         self.embeddingModels = embeddingModels
         self.imageModels = imageModels
+        self.evaluationModels = evaluationModels
         self.fallback = fallback
     }
 
@@ -168,5 +177,13 @@ public struct CustomProvider: AIProvider, Sendable {
             throw NoSuchModelError(modelID: modelID, modelKind: .image)
         }
         return try fallback.imageModel(modelID)
+    }
+
+    public func evaluationModel(_ modelID: String) throws -> any EvaluationModel {
+        if let model = evaluationModels[modelID] { return model }
+        guard let fallback else {
+            throw NoSuchModelError(modelID: modelID, modelKind: .evaluation)
+        }
+        return try fallback.evaluationModel(modelID)
     }
 }

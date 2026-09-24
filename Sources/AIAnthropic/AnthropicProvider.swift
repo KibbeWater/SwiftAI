@@ -82,6 +82,18 @@ public struct AnthropicProvider: AIProvider, Sendable {
             defaultMaxTokens: defaultMaxTokens
         )
     }
+
+    /// Returns an evaluation model that answers through structured output.
+    ///
+    /// No thinking configuration is sent, which leaves thinking off on every model that allows
+    /// it. Sending `thinking: {type: "disabled"}` explicitly would fail on models that always
+    /// think adaptively. Pass `["anthropic": ["thinking": …]]` to enable it for harder
+    /// evaluations.
+    ///
+    /// - Important: Experimental. Evaluation may change in a minor release.
+    public func evaluationModel(_ modelID: String) -> any EvaluationModel {
+        LanguageModelEvaluationModel(model: languageModel(modelID), provider: name)
+    }
 }
 
 /// A language model served by the Messages API.

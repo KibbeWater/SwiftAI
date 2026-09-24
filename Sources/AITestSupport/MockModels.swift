@@ -150,23 +150,82 @@ public final class MockTranscriptionModel: TranscriptionModel, @unchecked Sendab
     }
 }
 
+/// A scripted ``EvaluationModel``.
+///
+/// Answers with whatever ``respond`` returns, and records every request so tests can assert on
+/// the questions and state it received.
+public final class MockEvaluationModel: EvaluationModel, @unchecked Sendable {
+    public let provider: String
+    public let modelID: String
+    public let supportedQuestionTypes: Set<EvaluationQuestionType>
+
+    /// Produces the response for a request. The default answers every question with the first
+    /// option, the lowest level, or a probability of one half.
+    public var respond: @Sendable (EvaluationModelCallOptions) async throws -> EvaluationModelResponse
+
+    private let lock = NSLock()
+    private var recorded: [EvaluationModelCallOptions] = []
+
+    public init(
+        provider: String = "mock",
+        modelID: String = "mock-evaluation",
+        supportedQuestionTypes: Set<EvaluationQuestionType> = Set(EvaluationQuestionType.allCases),
+        respond: (@Sendable (EvaluationModelCallOptions) async throws -> EvaluationModelResponse)? = nil
+    ) {
+        self.provider = provider
+        self.modelID = modelID
+        self.supportedQuestionTypes = supportedQuestionTypes
+        self.respond = respond ?? { options in
+            EvaluationModelResponse(answers: Dictionary(uniqueKeysWithValues: options.questions.map { entry in
+                switch entry.question {
+                case .choice(_, let options): return (entry.id, .choice(options[0].name))
+                case .score: return (entry.id, .score(0))
+                case .boolean: return (entry.id, .boolean(probability: 0.5))
+                }
+            }))
+        }
+    }
+
+    /// Creates a model that always returns the same answers.
+    public convenience init(
+        answers: [String: EvaluationAnswer],
+        rounding: EvaluationRounding? = nil,
+        usage: Usage = .none
+    ) {
+        self.init(respond: { _ in EvaluationModelResponse(answers: answers, rounding: rounding, usage: usage) })
+    }
+
+    /// The requests the model received, in order.
+    public var recordedCalls: [EvaluationModelCallOptions] {
+        lock.withLock { recorded }
+    }
+
+    public func evaluate(_ options: EvaluationModelCallOptions) async throws -> EvaluationModelResponse {
+        lock.withLock { recorded.append(options) }
+        return try await respond(options)
+    }
+}
+
 /// A provider that vends whichever mock models it was given.
 public struct MockProvider: AIProvider, Sendable {
     public let name: String
     private let language: (any LanguageModel)?
     private let embedding: (any EmbeddingModel)?
     private let image: (any ImageModel)?
+    private let evaluation: (any EvaluationModel)?
 
     public init(
         name: String = "mock",
         language: (any LanguageModel)? = nil,
         embedding: (any EmbeddingModel)? = nil,
-        image: (any ImageModel)? = nil
+        image: (any ImageModel)? = nil,
+        evaluation: (any EvaluationModel)? = nil
     ) {
         self.name = name
         self.language = language
         self.embedding = embedding
         self.image = image
+        self.evaluation = evaluation
     }
 
     public func languageModel(_ modelID: String) throws -> any LanguageModel {
@@ -182,5 +241,10 @@ public struct MockProvider: AIProvider, Sendable {
     public func imageModel(_ modelID: String) throws -> any ImageModel {
         guard let image else { throw NoSuchModelError(modelID: modelID, modelKind: .image) }
         return image
+    }
+
+    public func evaluationModel(_ modelID: String) throws -> any EvaluationModel {
+        guard let evaluation else { throw NoSuchModelError(modelID: modelID, modelKind: .evaluation) }
+        return evaluation
     }
 }

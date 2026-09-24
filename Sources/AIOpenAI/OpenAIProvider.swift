@@ -85,6 +85,40 @@ public struct OpenAIProvider: AIProvider, Sendable {
             .embeddingModel(modelID, maxEmbeddingsPerCall: 2048)
     }
 
+    /// Returns an evaluation model that answers through structured output on the Responses API.
+    ///
+    /// Reasoning effort is set to the lowest the model family accepts — `none` from GPT-5.1 on,
+    /// `minimal` on GPT-5, `low` on the o-series — and left unset for models without reasoning,
+    /// which reject the parameter. Override with `["openai": ["reasoning": ["effort": …]]]`.
+    ///
+    /// - Important: Experimental. Evaluation may change in a minor release.
+    public func evaluationModel(_ modelID: String) -> any EvaluationModel {
+        LanguageModelEvaluationModel(
+            model: languageModel(modelID),
+            provider: name,
+            defaultProviderOptions: Self.minimalReasoningEffort(for: modelID).map { effort in
+                [name: ["reasoning": ["effort": .string(effort)]]]
+            }
+        )
+    }
+
+    /// The lowest reasoning effort a model accepts, or `nil` for a model without reasoning.
+    static func minimalReasoningEffort(for modelID: String) -> String? {
+        if modelID.hasPrefix("gpt-") {
+            let version = modelID.dropFirst("gpt-".count).prefix { $0.isNumber || $0 == "." }
+            let components = version.split(separator: ".").compactMap { Int($0) }
+            guard let major = components.first, major >= 5 else { return nil }
+            let minor = components.count > 1 ? components[1] : 0
+            // `gpt-5-chat` models are not reasoning models.
+            if modelID.contains("-chat") { return nil }
+            return major > 5 || minor >= 1 ? "none" : "minimal"
+        }
+        if let first = modelID.first, first == "o", modelID.dropFirst().first?.isNumber == true {
+            return "low"
+        }
+        return nil
+    }
+
     /// Returns an image generation model.
     public func imageModel(_ modelID: String) -> any ImageModel {
         OpenAIImageModel(provider: name, modelID: modelID, client: client)

@@ -389,3 +389,25 @@ struct GoogleTests {
         #expect(reason == .toolCalls)
     }
 }
+
+@Suite("Google evaluation")
+struct GoogleEvaluationTests {
+    @Test("Turns thinking down as far as each model allows", arguments: [
+        ("gemini-3.5-flash-lite", ["thinkingLevel": "minimal"]),
+        ("gemini-3-pro-preview", ["thinkingLevel": "minimal"]),
+        // Newer non-lite Flash models no longer accept `minimal`.
+        ("gemini-3.7-flash", ["thinkingLevel": "low"]),
+        ("gemini-flash-latest", ["thinkingLevel": "low"]),
+        ("gemini-2.5-flash", ["thinkingBudget": 0]),
+        // 2.5 Pro cannot turn thinking off; 128 is its floor.
+        ("models/gemini-2.5-pro", ["thinkingBudget": 128]),
+    ] as [(String, JSONValue)])
+    func minimalThinking(modelID: String, config: JSONValue) {
+        #expect(GoogleProvider.minimalThinking(for: modelID) == config)
+    }
+
+    @Test("Leaves models without thinking alone")
+    func noThinkingForOlderModels() {
+        #expect(GoogleProvider.minimalThinking(for: "gemini-2.0-flash") == nil)
+    }
+}
