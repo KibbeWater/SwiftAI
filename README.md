@@ -45,7 +45,7 @@ retries, middleware — works identically across all of them.
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/KibbeWater/SwiftAI.git", from: "0.1.0")
+    .package(url: "https://github.com/KibbeWater/SwiftAI.git", from: "0.2.0")
 ]
 ```
 
