@@ -358,4 +358,47 @@ struct StreamTextTests {
         _ = try? await task.value
         stream.cancel()
     }
+
+    // MARK: - Reasoning metadata
+
+    @Test("Keeps a streamed reasoning block's metadata for the next turn")
+    func keepsReasoningMetadata() async throws {
+        // OpenRouter replays reasoning through `reasoning_details`, which must survive streaming
+        // exactly as it survives a buffered response, or the next turn loses the model's thinking.
+        let details: ProviderOptions = ["openrouter": ["reasoning_details": [["type": "reasoning.text", "text": "Hmm"]]]]
+        let model = MockLanguageModel(responses: [
+            .init(content: [.reasoning(ReasoningPart("Hmm", providerOptions: details)), .text(TextPart("Done."))]),
+        ])
+
+        let stream = streamText(model: model, prompt: "Think")
+        let reasoning = try await stream.responseMessages.first?.assistantReasoning
+
+        #expect(reasoning?.providerOptions == details)
+    }
+
+    @Test("Keeps an empty reasoning block that carries metadata")
+    func keepsEncryptedReasoning() async throws {
+        // Encrypted reasoning has no visible text, only the opaque blob the provider needs back.
+        let encrypted: ProviderOptions = ["openrouter": ["reasoning_details": [["type": "reasoning.encrypted", "data": "b64"]]]]
+        let model = MockLanguageModel(responses: [
+            .init(content: [.reasoning(ReasoningPart("", providerOptions: encrypted)), .text(TextPart("Done."))]),
+        ])
+
+        let stream = streamText(model: model, prompt: "Think")
+        let reasoning = try await stream.responseMessages.first?.assistantReasoning
+
+        #expect(reasoning?.text == "")
+        #expect(reasoning?.providerOptions == encrypted)
+    }
+}
+
+private extension ModelMessage {
+    /// The first reasoning part of an assistant message.
+    var assistantReasoning: ReasoningPart? {
+        guard case .assistant(let message) = self else { return nil }
+        return message.content.lazy.compactMap { part -> ReasoningPart? in
+            guard case .reasoning(let reasoning) = part else { return nil }
+            return reasoning
+        }.first
+    }
 }

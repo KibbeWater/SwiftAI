@@ -66,7 +66,15 @@ struct StepAccumulator {
             let signature = metadata?.namespaces.values
                 .compactMap { $0["signature"]?.stringValue }
                 .first
-            closeBlock(id: id) { .reasoning(ReasoningPart($0, signature: signature, providerOptions: nil)) }
+            // Everything else the provider attached travels with the part too, so the next turn
+            // sees the same values a buffered response would have carried — OpenRouter's
+            // `reasoning_details`, for example, without which a continuation loses its reasoning.
+            let options = metadata.flatMap { $0.isEmpty ? nil : ProviderOptions($0.namespaces) }
+            // A block with no visible text still matters when it carries metadata: encrypted
+            // reasoning arrives as exactly that.
+            closeBlock(id: id, keepsEmpty: options != nil) {
+                .reasoning(ReasoningPart($0, signature: signature, providerOptions: options))
+            }
             return .reasoningEnd(id: id)
 
         case .toolInputStart(let id, let toolName, _, _):
@@ -149,10 +157,14 @@ struct StepAccumulator {
         openBlocks[id]?.text += delta
     }
 
-    private mutating func closeBlock(id: String, makeContent: (String) -> ModelContent) {
+    private mutating func closeBlock(
+        id: String,
+        keepsEmpty: Bool = false,
+        makeContent: (String) -> ModelContent
+    ) {
         guard let block = openBlocks.removeValue(forKey: id) else { return }
         // An empty block carries no information and would render as a stray blank part.
-        guard !block.text.isEmpty else { return }
+        guard keepsEmpty || !block.text.isEmpty else { return }
         slots[block.slot] = makeContent(block.text)
     }
 }

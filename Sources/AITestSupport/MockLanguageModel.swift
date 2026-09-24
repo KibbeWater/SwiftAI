@@ -214,7 +214,12 @@ public final class MockLanguageModel: LanguageModel, @unchecked Sendable {
                 for chunk in MockLanguageModel.split(reasoning.text, by: response.textChunkSize) {
                     continuation.yield(.reasoningDelta(id: blockID, delta: chunk))
                 }
-                continuation.yield(.reasoningEnd(id: blockID))
+                // A reasoning part's options are what a real provider would have attached as
+                // metadata, so they travel on the end part the way a provider's would.
+                continuation.yield(.reasoningEnd(
+                    id: blockID,
+                    providerMetadata: reasoning.providerOptions.map { ProviderMetadata($0.namespaces) }
+                ))
 
             case .toolCall(let call):
                 // Real providers stream tool arguments as JSON fragments, so the mock does too.
