@@ -382,10 +382,38 @@ let text  = try await transcribe(model: openai.transcriptionModel("whisper-1"), 
 
 | Product | Covers |
 | --- | --- |
-| `AIOpenAI` | Responses API, Chat Completions, embeddings, images, speech, transcription |
-| `AIAnthropic` | Messages API, extended thinking, prompt caching |
-| `AIGoogle` | Gemini `generateContent`, thinking, embeddings |
-| `AIOpenAICompatible` | Any OpenAI-compatible server: Ollama, vLLM, Groq, Together, LM Studio, OpenRouter |
+| `AIOpenAI` | Responses API, Chat Completions, embeddings, images, speech, transcription, evaluation |
+| `AIAnthropic` | Messages API, extended thinking, prompt caching, evaluation |
+| `AIGoogle` | Gemini `generateContent`, thinking, embeddings, evaluation |
+| `AIOpenRouter` | Hundreds of models through one key: chat with reasoning replay, web search, embeddings, images, decisions |
+| `AIOpenAICompatible` | Any OpenAI-compatible server: Ollama, vLLM, Groq, Together, LM Studio |
+
+### OpenRouter
+
+```swift
+let openrouter = OpenRouterProvider(appName: "My App")  // Reads OPENROUTER_API_KEY.
+
+var settings = GenerationSettings()
+settings.providerOptions = ["openrouter": [
+    "models": ["anthropic/claude-haiku-4.5", "openai/gpt-5-mini"],  // Fallbacks, in order.
+    "provider": ["sort": "throughput"],
+    "reasoning": ["max_tokens": 1024],
+]]
+
+let result = try await generateText(
+    model: openrouter.languageModel("anthropic/claude-haiku-4.5"),
+    prompt: "What changed in the latest Swift release?",
+    tools: [OpenRouterTools.webSearch(maxResults: 3)],
+    settings: settings
+)
+result.providerMetadata?["openrouter"]?["cost"]  // What the call cost, in credits.
+```
+
+Options under `"openrouter"` go into the request body under their documented wire names, so
+OpenRouter features that arrive after this package was written already work. Reasoning is
+replayed across turns through `responseMessages`, including Anthropic's and Gemini's signatures and
+OpenAI's encrypted reasoning. `decisionModel(_:)` serves OpenRouter's Decisions API for
+[evaluation](#evaluation).
 
 Provider-specific features are reached through namespaced options rather than a union of every
 provider's settings:

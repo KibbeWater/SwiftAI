@@ -37,6 +37,7 @@ let package = Package(
         .library(name: "AIAnthropic", targets: ["AIAnthropic"]),
         .library(name: "AIGoogle", targets: ["AIGoogle"]),
         .library(name: "AIOpenAICompatible", targets: ["AIOpenAICompatible"]),
+        .library(name: "AIOpenRouter", targets: ["AIOpenRouter"]),
 
         // Test doubles for consumers writing tests against their own SwiftAI integrations.
         .library(name: "AITestSupport", targets: ["AITestSupport"]),
@@ -111,6 +112,11 @@ let package = Package(
             dependencies: ["AIProviderSpec", "AIProviderUtils"],
             swiftSettings: sharedSwiftSettings
         ),
+        .target(
+            name: "AIOpenRouter",
+            dependencies: ["AIProviderSpec", "AIProviderUtils"],
+            swiftSettings: sharedSwiftSettings
+        ),
 
         // MARK: - Test support
 
@@ -162,6 +168,12 @@ let package = Package(
         .testTarget(
             name: "AIAnthropicTests",
             dependencies: ["AIAnthropic", "AITestSupport"],
+            resources: [.copy("Fixtures")],
+            swiftSettings: sharedSwiftSettings
+        ),
+        .testTarget(
+            name: "AIOpenRouterTests",
+            dependencies: ["AIOpenRouter", "AITestSupport", "SwiftAI"],
             resources: [.copy("Fixtures")],
             swiftSettings: sharedSwiftSettings
         ),

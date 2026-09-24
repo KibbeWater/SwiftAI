@@ -5,9 +5,10 @@ import Foundation
 /// A language model served by the Chat Completions API.
 ///
 /// The endpoint is supported by OpenAI and by essentially every self-hosted or third-party server
-/// that advertises OpenAI compatibility — Ollama, vLLM, Groq, Together, LM Studio, OpenRouter and
-/// others. Differences between them are handled by ``OpenAICompatibleQuirks`` rather than by
-/// separate implementations.
+/// that advertises OpenAI compatibility — Ollama, vLLM, Groq, Together, LM Studio and others.
+/// Differences between them are handled by ``OpenAICompatibleQuirks`` rather than by separate
+/// implementations. OpenRouter has its own provider, `AIOpenRouter`, which replays reasoning
+/// across turns.
 public struct ChatCompletionsModel: LanguageModel {
     public let provider: String
     public let modelID: String
